@@ -1,9 +1,9 @@
-bot:
-  name: ${BOT_USERNAME}
-  token: ${BOT_TOKEN}
-
 logging:
   level:
     com:
       tgbot:
         jhelpertgbot: DEBUG
+
+spring:
+  config:
+    import: bot-secret.yml
