@@ -1,5 +1,8 @@
 package com.tgbot.jhelpertgbot;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -14,34 +17,43 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class Bot extends TelegramLongPollingBot {
 
   private final TelegramBotsApi telegramBotsApi;
-  private final BotProperties configData;
+  private final BotProperties botProperties;
+  private final List<BotResponse> responseList;
+  private Map<String,BotResponse> commandResponseMap;
 
   @PostConstruct
   @SneakyThrows
   private void init() {
     telegramBotsApi.registerBot(this);
+    commandResponseMap = responseList.stream().collect(Collectors
+        .toMap(response -> response.getCommand().getStringCommand(), response -> response));
   }
 
   @Override
   public String getBotUsername() {
-    return configData.getName();
+    return botProperties.getName();
   }
 
   @Override
   public String getBotToken() {
-    return configData.getToken();
-  }
-
-  @Override
-  public void onUpdateReceived(Update update) {
-    sendMessage(update);
+    return botProperties.getToken();
   }
 
   @SneakyThrows
-  private void sendMessage(Update update) {
-    SendMessage sendMessage = new SendMessage();
-    sendMessage.setChatId(update.getMessage().getChatId().toString());
-    sendMessage.setText("Bot in progress...");
+  @Override
+  public void onUpdateReceived(Update update) {
+    BotResponse response = commandResponseMap.get(update.getMessage().getText());
+    SendMessage sendMessage;
+
+    if(response != null) {
+      sendMessage = response.reply(update);
+    } else {
+      sendMessage = SendMessage.builder()
+          .chatId(update.getMessage().getChatId().toString())
+          .text("No command found, use /help for see command list!")
+          .build();
+    }
+
     sendApiMethod(sendMessage);
   }
 }

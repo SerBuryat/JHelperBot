@@ -9,7 +9,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Configuration
 @ConfigurationPropertiesScan
-public class Config {
+public class BotConfig {
 
   @Bean
   public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
