@@ -1,7 +1,6 @@
 bot:
   name: ${BOT_USERNAME}
-  access:
-    token: ${BOT_ACCESS_TOKEN}
+  token: ${BOT_TOKEN}
 
 logging:
   level:
