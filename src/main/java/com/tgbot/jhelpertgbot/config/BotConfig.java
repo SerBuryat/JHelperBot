@@ -1,4 +1,4 @@
-package com.tgbot.jhelpertgbot;
+package com.tgbot.jhelpertgbot.config;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;

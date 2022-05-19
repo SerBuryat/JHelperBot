@@ -1,11 +1,13 @@
-package com.tgbot.jhelpertgbot;
+package com.tgbot.jhelpertgbot.bot.response;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+import com.tgbot.jhelpertgbot.bot.command.Commands;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Help extends DefaultBotResponse{
+public class Help extends DefaultBotResponse {
 
   private static final Commands COMMANDS = Commands.HELP;
 
