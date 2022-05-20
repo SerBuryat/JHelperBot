@@ -1,9 +1,12 @@
-package com.tgbot.jhelpertgbot;
+package com.tgbot.jhelpertgbot.bot;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+
+import com.tgbot.jhelpertgbot.bot.response.BotResponse;
+import com.tgbot.jhelpertgbot.config.BotProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -19,6 +22,7 @@ public class Bot extends TelegramLongPollingBot {
   private final TelegramBotsApi telegramBotsApi;
   private final BotProperties botProperties;
   private final List<BotResponse> responseList;
+
   private Map<String,BotResponse> commandResponseMap;
 
   @PostConstruct
