@@ -7,6 +7,9 @@ import javax.annotation.PostConstruct;
 
 import com.tgbot.jhelpertgbot.bot.response.BotResponse;
 import com.tgbot.jhelpertgbot.config.BotProperties;
+import com.tgbot.jhelpertgbot.model.User;
+import com.tgbot.jhelpertgbot.model.state.ChatCondition;
+import com.tgbot.jhelpertgbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,7 @@ public class Bot extends TelegramLongPollingBot {
   private final TelegramBotsApi telegramBotsApi;
   private final BotProperties botProperties;
   private final List<BotResponse> responseList;
+  private final UserService service;
 
   private Map<String,BotResponse> commandResponseMap;
 
@@ -46,16 +50,27 @@ public class Bot extends TelegramLongPollingBot {
   @SneakyThrows
   @Override
   public void onUpdateReceived(Update update) {
-    BotResponse response = commandResponseMap.get(update.getMessage().getText());
     SendMessage sendMessage;
+    BotResponse response;
 
-    if(response != null) {
-      sendMessage = response.reply(update);
+    if (update.getMessage().getText().equals("/start")) {
+      response = commandResponseMap.get("/start");
     } else {
+      User user = service.findUserByChatId(update.getMessage().getChatId().toString());
+      if (!user.getCondition().equals(ChatCondition.INTRODUCTION_COMPLETED)) {
+        response = commandResponseMap.get(user.getCondition().getQuestion());
+      } else {
+        response = commandResponseMap.get(update.getMessage().getText());
+      }
+    }
+
+    if (response == null) {
       sendMessage = SendMessage.builder()
-          .chatId(update.getMessage().getChatId().toString())
-          .text("No command found, use /help for see command list!")
-          .build();
+              .chatId(update.getMessage().getChatId().toString())
+              .text("No command found, use /help to see command list!")
+              .build();
+    } else {
+      sendMessage = response.reply(update);
     }
 
     sendApiMethod(sendMessage);
