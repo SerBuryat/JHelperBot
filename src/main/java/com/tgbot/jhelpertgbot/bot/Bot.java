@@ -53,16 +53,25 @@ public class Bot extends TelegramLongPollingBot {
     SendMessage sendMessage;
     BotResponse response;
 
-    if (update.getMessage().getText().equals("/start")) {
+    if (!service.isExist(update.getMessage().getChatId().toString())) {
       response = commandResponseMap.get("/start");
     } else {
       User user = service.findUserByChatId(update.getMessage().getChatId().toString());
-      if (!user.getCondition().equals(ChatCondition.INTRODUCTION_COMPLETED)) {
-        response = commandResponseMap.get(user.getCondition().getQuestion());
-      } else {
+
+      if (user.getCondition().equals(ChatCondition.INTRODUCTION_COMPLETED)) {
         response = commandResponseMap.get(update.getMessage().getText());
+      } else {
+        response = commandResponseMap.get(user.getCondition().getQuestion());
       }
     }
+
+    sendMessage = getSendMessage(response, update);
+
+    sendApiMethod(sendMessage);
+  }
+
+  private SendMessage getSendMessage(BotResponse response, Update update) {
+    SendMessage sendMessage;
 
     if (response == null) {
       sendMessage = SendMessage.builder()
@@ -73,6 +82,6 @@ public class Bot extends TelegramLongPollingBot {
       sendMessage = response.reply(update);
     }
 
-    sendApiMethod(sendMessage);
+    return sendMessage;
   }
 }
